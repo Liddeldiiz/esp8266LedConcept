@@ -1,0 +1,13 @@
+Upon connection of esp8266 to server:
+	1. Server requests status of LED
+		1.1 Server sends GET msg to esp
+		1.2 esp sends POST msg to Server
+	2. Server updates status of LED in DB
+		2.1 simple update query in DB
+
+With every change of status of LED:
+	1. If LED is switched on/off by physical button
+		1.1 esp sends update to Server
+		1.2 Server updates status of LED in DB
+	2. If LED is switched on/off by Server webinterface
+		2.1 Server sends POST msg to esp to turn on/off LED && Server updates status of LED in DB
