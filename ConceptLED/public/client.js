@@ -1,6 +1,25 @@
 console.log('Client-side code running');
 
-const button = document.getElementById('myButton');
-button.addEventListener('click', function(e) {
-  console.log('button was clicked');
+const buttonOn = document.getElementById('turnOn');
+const buttonOff = document.getElementById('turnOff');
+
+buttonOn.addEventListener('click', function(e) {
+  console.log('turn on');
+
+  fetch('/clicked', {method: 'POST'})
+    .then(function(response) {
+      if(response.ok) {
+      console.log('Turn on of LED was recorded');
+      return;
+    }
+    throw new Error('Request failed.');
+  })
+  .catch(function(error) {
+    console.log(error);
+  });
 });
+
+buttonOff.addEventListener('click', function(e) {
+  console.log('turn off');
+})
+
