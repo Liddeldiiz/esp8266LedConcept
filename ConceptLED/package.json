@@ -1,0 +1,19 @@
+{
+  "name": "concept-led",
+  "version": "1.0.0",
+  "description": "ConceptLED with esp8266 and nodeJS",
+  "main": "server.js",
+  "scripts": {
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "www.github.com/Liddeldiiz/esp8266LedConcept"
+  },
+  "keywords": [
+    "esp8266",
+    "nodeJS"
+  ],
+  "author": "Liddeldiiz",
+  "license": "ISC"
+}
