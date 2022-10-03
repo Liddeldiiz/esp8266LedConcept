@@ -15,5 +15,9 @@
     "nodeJS"
   ],
   "author": "Liddeldiiz",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "assert": "^2.0.0",
+    "mongodb": "^4.10.0"
+  }
 }
