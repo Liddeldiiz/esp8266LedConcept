@@ -6,31 +6,34 @@ const buttonOff = document.getElementById('turnOff');
 buttonOn.addEventListener('click', function(e) {
   console.log('turn on');
 
-  fetch('/LED', {method: 'POST'})
+  // /turnOn is identified by the formaction tag in index.html
+  fetch('/turnOn', {method: 'POST'})
     .then(function(response) {
       if(response.ok) {
-      console.log('Turn on of LED was recorded');
-      return;
-    }
-    throw new Error('Request failed.');
-  })
-  .catch(function(error) {
-    console.log(error);
-  });
+        console.log('Turn on of LED was recorded');
+        return;
+      }
+      throw new Error('Request failed.');
+    })
+    .catch(function(error) {
+      console.log(error);
+    });
 });
 
 buttonOff.addEventListener('click', function(e) {
   console.log('turn off');
-  fetch('/LED', {method: 'POST'})
+
+  // /turnOff is identified by the formaction tag in index.html
+  fetch('/turnOff', {method: 'POST'})
     .then(function(response) {
       if(response.ok) {
-      console.log('Turn off of LED was recorded');
-      return;
-    }
-    throw new Error('Request failed.');
-  })
-  .catch(function(error) {
-    console.log(error);
-  });
+        console.log('Turn off of LED was recorded');
+        return;
+      }
+      throw new Error('Request failed.');
+    })
+    .catch(function(error) {
+      console.log(error);
+    });
 });
 

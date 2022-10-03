@@ -5,8 +5,9 @@
     <title>server-side interface</title>
   </head>
   <body>
-    <button id="turnOn">Turn On</button>
-    <button id="turnOff">Turn Off</button>
+    <!-- formaction allows to identify the buttons in the client side and server side of the application -->
+    <button formaction="turnOn" id="turnOn">Turn On</button>
+    <button formaction="turnOff" id="turnOff">Turn Off</button>
   </body>
   <script src="client.js"></script>
 </html>
