@@ -1,3 +1,5 @@
+// init function is necessary to establish connection between server and esp
+
 /* the state of the led will be stored inside an object. Once there will be more devices this can be helpful */
 const statistics = {
   stateOdDevice:0

@@ -1,0 +1,23 @@
+CONNECTIONS:
+	[x] - connection between nodeJS server and mongoDB
+	[ ] - connection between nodeJS server and esp8266
+	[ ] - connection between nodeJS server and phone Application
+
+SERVER:
+	[x] - Read the correct value from the client-side on localhost
+	[x] - change requested status in DB
+	[ ] - Read the correct value from the esp8266 device
+	[ ] - Write the correct value to the esp8266 device
+	[ ] - Run the nodeJS server as a service => link to tutorial => https://www.youtube.com/watch?v=1smy9yyme1Y
+
+ESP8266:
+	[x] - Change the state of the LED on button input
+	[x] - Change the state of the LED on Serial input
+	[ ] - Chenge the state of the LED on HTTP request
+	[x] - Connect the device to the WiFi
+	[ ] - Connect the device to the Server
+
+PHONE APPLICATION:
+	[ ] - Prepare the functions correlating to: turnOn, turnOff, and getState
+	[ ] - Create GUI
+	[ ] - Figure out how to securly connect from the phone application to the server (is a VPN an option?)
