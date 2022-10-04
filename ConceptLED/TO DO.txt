@@ -9,6 +9,7 @@ SERVER:
 	[ ] - Read the correct value from the esp8266 device
 	[ ] - Write the correct value to the esp8266 device
 	[ ] - Run the nodeJS server as a service => link to tutorial => https://www.youtube.com/watch?v=1smy9yyme1Y
+	[ ] - Figure out how to safely host the service in the internet (needed in order to connect the server with nodeJS and the phone application)
 
 ESP8266:
 	[x] - Change the state of the LED on button input
