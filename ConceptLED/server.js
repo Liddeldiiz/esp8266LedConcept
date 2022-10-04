@@ -82,7 +82,7 @@ async function startApp(uri) {
   });
 };
 
-/* getter and setter */
+/* getter and setter need to be modified as soon as the esp API is written*/
 
 function getState() {
   return s1.stateOdDevice;
@@ -96,8 +96,4 @@ main().catch(console.error);
 
 
 
-
-// other option
-//const url = 'mongodb://localhost:21017/LED'
-
-// only the configuration of the database and the endpoint API of the esp is left + writing the phone app
+// only the configuration of the endpoint API of the esp is left + writing the phone app
