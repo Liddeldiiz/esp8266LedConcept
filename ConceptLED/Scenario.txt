@@ -11,3 +11,9 @@ With every change of status of LED:
 		1.2 Server updates status of LED in DB
 	2. If LED is switched on/off by Server webinterface
 		2.1 Server sends POST msg to esp to turn on/off LED && Server updates status of LED in DB
+
+
+Notes:
+	-	is it possible/feasible to not use a hosting service like heroku or something alike, 
+		but to create a network that only allows traffic via a VPN? If there is no VPN no connection to the router would be possible
+	
