@@ -120,7 +120,9 @@ void loop() {
     s += "Led Pin = ";
     s += String(digitalRead(ledpin));
   } else if (val == -3) {
+    s += "Status of LED: ";
     s += temp;
+    s += "<br>";
   } else {
     s += "Invalid Request.<br> Try /led/1, /led/0, /read, or /status.";
   }

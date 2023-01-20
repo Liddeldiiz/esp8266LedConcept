@@ -15,6 +15,8 @@ const s1 = statistics;
 const http = require('http');
 const { response } = require('express');
 
+const uri = "mongodb://localhost:27017";
+
 // serve files from the public directory
 app.use(express.static('public'));
 app.use(bodyParser.text({ extended: false}));
@@ -131,7 +133,7 @@ function setStatus(update) {
 
 function ledFunc(state) {
   let url = 'http://192.168.4.1/' + state; // this needs to change, in order to automate this function for n devices, not just one device
-  getDataFromNode(url);
+  getDataFromNode(url, 1);
 }
 
 function setQueryTime(amountToBeDeducted) {
@@ -150,22 +152,22 @@ function setQueryTime(amountToBeDeducted) {
 
 function updateDB() {
   MongoClient.connect(uri, function(err, db) {
-        if (err) throw err;
+    if (err) throw err;
 
-        let insertDate = setQueryTime();
-        var dbo = db.db("LED");
-        var myobj = {name: "switchTime", time: insertDate, state: getStatus()/*state signal from clicked button*/};
-        dbo.collection("SwitchLed").insertOne(myobj, function(err, res) {
-            if (err) throw err;
-            console.log("1 document updated")
-            db.close()
-        })
-      });
+    let insertDate = setQueryTime();
+    var dbo = db.db("LED");
+    var myobj = {name: "switchTime", time: insertDate, state: getStatus()/*state signal from clicked button*/};
+    dbo.collection("SwitchLed").insertOne(myobj, function(err, res) {
+      if (err) throw err;
+      console.log("1 document updated")
+      db.close()
+    })
+  });
 }
 
 function getDataFromNode(url, byte) {
+  let data = '';
   http.get(url, (response) => {
-    let data = '';
     response.on('data', (chunk) => {
       data += chunk;
     });
@@ -178,8 +180,6 @@ function getDataFromNode(url, byte) {
     console.log(error);
   });
   if (byte == 0) {
-    return data;
-  } else {
     return data;
   }
 }
