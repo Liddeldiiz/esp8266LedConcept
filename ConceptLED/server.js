@@ -1,4 +1,4 @@
-// init function is necessary to establish connection between server and esp
+// Check out: https://axios-http.com/docs/intro
 
 /* the state of the led will be stored inside an object. Once there will be more devices this can be helpful */
 const statistics = {
@@ -13,6 +13,7 @@ const app = express();
 const bodyParser = require('body-parser');
 const s1 = statistics;
 const http = require('http');
+const { response } = require('express');
 
 // serve files from the public directory
 app.use(express.static('public'));
@@ -28,6 +29,7 @@ async function main() {
     await client.connect();
     console.log("connected to client");
     await startApp(uri);
+    // I will check status of nodes from linux server via a bash file an return the status here
   } catch(e) {
     console.log(e);
     console.error('Failed to connect to MongoDB Server');
@@ -45,6 +47,7 @@ async function startApp(uri) {
     res.sendFile(__dirname + '/index.html');
   });
 
+  //checkConnectionToNode();
 /* code identifies from which button the POST method is sent and it updates the database according to these values */
 
   app.post("/turnOn", (req, res) => {
@@ -55,25 +58,7 @@ async function startApp(uri) {
       console.log('turn On');
       setStatus(1);
       ledFunc('led/1');
-      MongoClient.connect(uri, function(err, db) {
-        if (err) throw err;
-        const date = new Date();
-
-        let minute = date.getMinutes();
-        let hour = date.getHours();
-        let day = date.getDate();
-        let month = date.getMonth() + 1;
-        let year = date.getFullYear();
-
-        let insertDate = `${year}-${month}-${day}T${hour}:${minute}:00.000Z`;
-        var dbo = db.db("LED");
-        var myobj = {name: "switchTime", time: insertDate, state: getStatus()/*state signal from clicked button*/};
-        dbo.collection("SwitchLed").insertOne(myobj, function(err, res) {
-            if (err) throw err;
-            console.log("1 document updated")
-            db.close()
-        })
-      });
+      updateDB();
     }
   });
 
@@ -85,25 +70,7 @@ async function startApp(uri) {
       console.log('turn off');
       setStatus(0);
       ledFunc('led/0');
-      const date = new Date();
-
-      let minute = date.getMinutes();
-      let hour = date.getHours();
-      let day = date.getDate();
-      let month = date.getMonth() + 1;
-      let year = date.getFullYear();
-
-      let insertDate = `${year}-${month}-${day}T${hour}:${minute}:00.000Z`;
-      MongoClient.connect(uri, function(err, db) {
-        if (err) throw err;
-        var dbo = db.db("LED");
-        var myobj = {name: "switchTime", time: insertDate, state: getStatus()/*state signal from clicked button*/};
-        dbo.collection("SwitchLed").insertOne(myobj, function(err, res) {
-            if (err) throw err;
-            console.log("1 document updated")
-            db.close()
-        })
-      });
+      updateDB();
     }
   });
 
@@ -121,22 +88,10 @@ async function startApp(uri) {
 
   app.post("/fourHours", (req, res) => {
 
-    const date = new Date();
-
-    let minute = date.getMinutes();
-    let hourOne = date.getHours() - 4;
-    let hourTwo = date.getHours();
-    let day = date.getDate();
-    let month = date.getMonth() + 1;
-    let year = date.getFullYear();
-
-    let queryDateOne = `${year}-${month}-${day}T${hourOne}:${minute}:00.000Z`;
-    let queryDateTwo = `${year}-${month}-${day}T${hourTwo}:${minute}:00.000Z`;
-
-    console.log(queryDateOne);
-    console.log(queryDateTwo);
-
-    MongoClient.connect(uri, function(err, db) { /* {time: 2023-01-19T11:58} is it possible that there is something like "%" needed to ignore minutes and seconds? Anyway, first attempt did not return any data*/
+    let queryDateOne = setQueryTime(4);
+    let queryDateTwo = setQueryTime();
+    
+    MongoClient.connect(uri, function(err, db) {
       if (err) throw err; // tested on db: {"time": { $gte: "2023-1-19T20:0:00.000Z", $lt: "2023-1-19T20:3:00.000Z"}}
       var dbo = db.db("LED");
       dbo.collection("SwitchLed").find( {time: { $gt: queryDateOne, $lt: queryDateTwo }} ).toArray(function(err, result) {
@@ -158,18 +113,57 @@ async function startApp(uri) {
 
 };
 
-/* getter and setter need to be modified as soon as the esp API is written*/
+/* getter url part needs to be modified*/
 
 function getStatus() {
-  return s1.stateOdDevice;
+  let url = 'http://192.168.4.1/status';
+  data = getDataFromNode(url, 0);
+  console.log(data);
+  if (s1.stateOfDevice != data) {
+    data = setStatus(data);
+  }
+  return s1.stateOfDevice;
 }
 
 function setStatus(update) {
-  return s1.stateOdDevice = update;
+  return s1.stateOfDevice = update;
 }
 
 function ledFunc(state) {
-  let url = 'http://192.168.4.1/' + state; /* hide IP adr when uploading to git!!!!*/
+  let url = 'http://192.168.4.1/' + state; // this needs to change, in order to automate this function for n devices, not just one device
+  getDataFromNode(url);
+}
+
+function setQueryTime(amountToBeDeducted) {
+  const date = new Date();
+
+  let minute = date.getMinutes();
+  let hourOne = date.getHours() - amountToBeDeducted;
+  let day = date.getDate();
+  let month = date.getMonth() + 1;
+  let year = date.getFullYear();
+
+  let queryDate = `${year}-${month}-${day}T${hourOne}:${minute}:00.000Z`;
+
+  return queryDate;
+}
+
+function updateDB() {
+  MongoClient.connect(uri, function(err, db) {
+        if (err) throw err;
+
+        let insertDate = setQueryTime();
+        var dbo = db.db("LED");
+        var myobj = {name: "switchTime", time: insertDate, state: getStatus()/*state signal from clicked button*/};
+        dbo.collection("SwitchLed").insertOne(myobj, function(err, res) {
+            if (err) throw err;
+            console.log("1 document updated")
+            db.close()
+        })
+      });
+}
+
+function getDataFromNode(url, byte) {
   http.get(url, (response) => {
     let data = '';
     response.on('data', (chunk) => {
@@ -183,10 +177,14 @@ function ledFunc(state) {
   .on('error', (error) => {
     console.log(error);
   });
+  if (byte == 0) {
+    return data;
+  } else {
+    return data;
+  }
 }
 
 main().catch(console.error);
-
 
 
 // only the configuration of the endpoint API of the esp is left | DONE

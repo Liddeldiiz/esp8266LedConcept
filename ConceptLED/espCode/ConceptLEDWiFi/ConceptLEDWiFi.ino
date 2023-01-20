@@ -54,6 +54,10 @@ void turnLedOff() {
   temp = 0;
 }
 
+void checkLedState() {
+  temp = digitalRead(ledpin);
+}
+
 //========Setup========//
 void setup() {
   initHardware();
@@ -83,6 +87,8 @@ void loop() {
   } else if (req.indexOf("/read") != -1) {
     val = -2; // Will print pin reads
   // otherwise request will be invalid.
+  } else if (req.indexOf("/status") != -1) {
+    val = -3; // should return status of the led to the nodejs server
   }
 
   // Set GPIOS according to the request
@@ -90,6 +96,8 @@ void loop() {
     turnLedOff();
   } else if (val == 1) {
     turnLedOn();
+  } else if (val == -3) {
+    checkLedState();
   }
     
 
@@ -111,8 +119,10 @@ void loop() {
     s += "<br>"; // go to the next line
     s += "Led Pin = ";
     s += String(digitalRead(ledpin));
+  } else if (val == -3) {
+    s += temp;
   } else {
-    s += "Invalid Request.<br> Try /led/1, /led/0, or /read.";
+    s += "Invalid Request.<br> Try /led/1, /led/0, /read, or /status.";
   }
   s += "</html>\n";
 
