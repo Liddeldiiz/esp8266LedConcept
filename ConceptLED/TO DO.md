@@ -1,29 +1,29 @@
 ### To Do list
 
 ## Connections:
-[x] - connection between nodeJS server and mongoDB
-[x] - connection between nodeJS server and esp8266
-[ ] - connection between nodeJS server and phone Application(client-side)
++ connection between nodeJS server and mongoDB																								[x]
++ connection between nodeJS server and esp8266																								[x]
++ connection between nodeJS server and phone Application(client-side)																		[x]
 
 ## Server:
-[x] - Read the correct value from the client-side on localhost
-[x] - change requested status in DB
-[ ] - Read the correct value from the esp8266 device
-[ ] - Write the correct value to the esp8266 device
-[ ] - Deploy the nodeJS application to Heroku
-[ ] - Figure out how to safely host the service in the internet (needed in order to connect the server with nodeJS and the phone application)
++ Read the correct value from the client-side on localhost																					[x]
++ change requested status in DB																												[x]
++ Read the correct value from the esp8266 device																							[ ]
++ Write the correct value to the esp8266 device																								[x]
++ Deploy the nodeJS application to Heroku																									[ ]
++ Figure out how to safely host the service in the internet (needed in order to connect the server with nodeJS and the phone application)	[ ]
 
 ## ESP8266:
-[x] - Change the state of the LED on button input
-[x] - Change the state of the LED on Serial input
-[x] - Chenge the state of the LED on HTTP request
-[x] - Connect the device to the WiFi
-[x] - Connect the device to the Server
++ Change the state of the LED on button input																								[x]
++ Change the state of the LED on Serial input																								[x]
++ Chenge the state of the LED on HTTP request																								[x]
++ Connect the device to the WiFi																											[x]
++ Connect the device to the Server																											[x]
 
 ## PHONE APPLICATION:
-[ ] - Prepare the functions correlating to: turnOn, turnOff, and getState
-[ ] - Create GUI
-[ ] - Figure out how to securly connect from the phone application to the server (is a VPN an option?)
++ Prepare the functions correlating to: turnOn, turnOff, and getState
++ Create GUI
++ Figure out how to securly connect from the phone application to the server (is a VPN an option?)
 
 # Notes:
 https://blog.hubspot.com/website/best-free-ssl-certificate-sources
