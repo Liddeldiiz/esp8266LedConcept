@@ -107,6 +107,7 @@ void loop() {
   String s = "HTTP/1.1 200 OK\r\n";
   s += "Content-Type: text/html\r\n\r\n";
   s += "<!DOCTYPE HTML>\r\n<html>\r\n";
+  
 
   // Of we are setting the LED, print out a message saying we did
   if (val >= 0) {
@@ -120,9 +121,9 @@ void loop() {
     s += "Led Pin = ";
     s += String(digitalRead(ledpin));
   } else if (val == -3) {
-    s += "Status of LED: ";
+    s += "<div class='status' id='status'>\r";
     s += temp;
-    s += "<br>";
+    s += "</div>\n";
   } else {
     s += "Invalid Request.<br> Try /led/1, /led/0, /read, or /status.";
   }

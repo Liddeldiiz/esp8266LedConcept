@@ -13,9 +13,13 @@ const app = express();
 const bodyParser = require('body-parser');
 const s1 = statistics;
 const http = require('http');
-const { response } = require('express');
+const { parse } = require('node-html-parser');
+//const { convert } = require('html-to-exit');
+//const { response } = require('express');
 
 const uri = "mongodb://localhost:27017";
+
+const STATUS_QUERY_SELECTOR = '.status'; //.firstChild 
 
 // serve files from the public directory
 app.use(express.static('public'));
@@ -30,6 +34,9 @@ async function main() {
   try {
     await client.connect();
     console.log("connected to client");
+    console.log('Performing intial check of node state:');
+    getDataFromNode('status');
+    console.log('Node state: ', getStatus());
     await startApp(uri);
     // I will check status of nodes from linux server via a bash file an return the status here
   } catch(e) {
@@ -77,13 +84,14 @@ async function startApp(uri) {
   });
 
   app.post("/status", (req, res) => {
-    var data = {status:getStatus()};
+    var data = {status:getStatusFromNode()};
+    getDataFromNode('status');
     if(getStatus() == 0) {
       res.send(data);
       return console.log('LED is OFF!');
     } else {
-        res.send(data);
-        return console.log('LED is ON!');
+      res.send(data);
+      return console.log('LED is ON!');
     }
   });
 
@@ -117,23 +125,37 @@ async function startApp(uri) {
 
 /* getter url part needs to be modified*/
 
-function getStatus() {
-  let url = 'http://192.168.4.1/status';
-  data = getDataFromNode(url, 0);
-  console.log(data);
-  if (s1.stateOfDevice != data) {
-    data = setStatus(data);
+function getStatusFromNode(nodeStatus) {  
+  if (s1.stateOfDevice != nodeStatus) {
+    setStatus(nodeStatus);
   }
   return s1.stateOfDevice;
 }
 
+function getStatus() {
+  return s1.stateOfDevice;
+}
+
 function setStatus(update) {
-  return s1.stateOfDevice = update;
+  s1.stateOfDevice = update;
 }
 
 function ledFunc(state) {
   let url = 'http://192.168.4.1/' + state; // this needs to change, in order to automate this function for n devices, not just one device
-  getDataFromNode(url, 1);
+  
+  let data = '';
+  http.get(url, (response) => {
+    response.on('data', (chunk) => {
+      data += chunk;
+    });
+
+    response.on('end', () => {
+      console.log(data);
+    });
+  })
+  .on('error', (error) => {
+    console.log(error);
+  });
 }
 
 function setQueryTime(amountToBeDeducted) {
@@ -165,23 +187,42 @@ function updateDB() {
   });
 }
 
-function getDataFromNode(url, byte) {
-  let data = '';
-  http.get(url, (response) => {
-    response.on('data', (chunk) => {
-      data += chunk;
-    });
-
-    response.on('end', () => {
-      console.log(data);
-    });
-  })
-  .on('error', (error) => {
-    console.log(error);
+function getDataFromNode(state) {
+  const postData = JSON.stringify({
+    'msg': 'Hello World'
   });
-  if (byte == 0) {
-    return data;
-  }
+
+  var options ={
+    host: '192.168.4.1',
+    port: 80,
+    path: `/${state}`,
+    method: 'POST',
+    headers: {
+        'Content-Type': 'text/html',
+        'Content-Length': Buffer.byteLength(postData)
+    }
+  };
+
+  var html = '';
+  var req = http.request(options, function (res) {
+    console.log(`STATUS: ${res.statusCode}`);
+    console.log(`HEADERS" ${JSON.stringify(res.headers)}`);
+    res.setEncoding('utf-8');
+    res.on('data', (chunk) => {
+        html += chunk;
+        const root = parse(html);
+        const row = root.querySelector(STATUS_QUERY_SELECTOR).firstChild; 
+        getStatusFromNode(row.rawText); // <-- this contains the status received from the node
+    });
+    res.on('end', () => {
+      console.log('No more data in response');
+    });
+  });
+  req.on('error', (error) => {
+    console.log(`Problem with request: ${error}`);
+  })
+  req.write(postData);
+  req.end();
 }
 
 main().catch(console.error);
