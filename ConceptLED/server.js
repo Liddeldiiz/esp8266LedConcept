@@ -84,14 +84,15 @@ async function startApp(uri) {
   });
 
   app.post("/status", (req, res) => {
-    var data = {status:getStatusFromNode()};
-    getDataFromNode('status');
+    var data = {status:getStatus()};
     if(getStatus() == 0) {
       res.send(data);
       return console.log('LED is OFF!');
-    } else {
+    } else if(getStatus() == 1) {
       res.send(data);
       return console.log('LED is ON!');
+    } else {
+      return console.log('Something went wrong');
     }
   });
 
