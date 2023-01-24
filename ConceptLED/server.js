@@ -35,9 +35,6 @@ async function main() {
   try {
     await client.connect();
     console.log("connected to client");
-    console.log('Performing intial check of node state:');
-    getDataFromNode('status');
-    console.log('Node state: ', getStatus());
     await startApp(uri);
     // I will check status of nodes from linux server via a bash file an return the status here
   } catch(e) {
@@ -62,42 +59,60 @@ async function startApp(uri) {
 
   app.post("/turnOn", async (req, res) => {
     if(getStatus() == 1) {
-      res.send(console.log('LED is already ON!'));
+      res.send('LED is already ON!');
       return console.log('LED is already ON!');
     } else {
       console.log('turn On');
-      setStatus(1);
+      //setStatus(1);
       // this tasks gets its own thread
       await ledWorkerFunctions("led/1", res);
+      //console.log('checking status after worker(turnOn) node: ')
+      //getDataFromNode()
+      //console.log(getStatus());
       await updateDB(res, 0);
     }
   });
 
   app.post("/turnOff", async (req, res) => {
     if(getStatus() == 0) {
-      res.send(console.log('LED is already OFF!'));
+      res.send('LED is already OFF!');
       return console.log('LED is already OFF!');
     } else {
       console.log('turn off');
-      setStatus(0);
+      //setStatus(0);
       // this tasks gets its own thread
       await ledWorkerFunctions("led/0", res);
+      //console.log('checking status after worker(turnOff) node: ')
+      //getDataFromNode()
+      //console.log(getStatus());
       await updateDB(res, 0);
     }
   });
 
-  app.post("/status", (req, res) => {
-    var data = {status:getStatus()};
-    if(getStatus() == 0) {
-      res.send(data);
-      return console.log('LED is OFF!');
-    } else if(getStatus() == 1) {
-      res.send(data);
-      return console.log('LED is ON!');
-    } else {
-      return console.log('Something went wrong');
-    }
+  app.post("/status", async (req, res) => {
+    insideGet(res)
+      .then((data) => console.log(data))
+      .catch((reason) => console.log(`Message: ${reason}`));
   });
+
+/*
+
+logs for activating buttons (turnOff and status)
+
+turn off <---- initiating turnOff(sending request to esp to /led/0 in order to activate the function for turning off led)
+<!DOCTYPE HTML>
+<html>
+LED is now off</html> <---- the html body is the response from esp
+
+1 document updated
+LED is ON! <---- no idea why it rushes, it should wait for the getDataFromNode function to grab data from the node, instead this instantly skips the function and grabs old value from s1.statistics
+undefined <---- not important right now
+STATUS: 200 <---- this is the firts log entry from the getDataFromNode function
+HEADERS" {"content-type":"text/html"}
+inside getDataFromNode func:
+0
+No more data in response <---- this is the last log entry from the getDataFromNode function
+*/
 
 
   app.post("/fourHours", (req, res) => {
@@ -129,22 +144,52 @@ async function startApp(uri) {
 
 /* getter url part needs to be modified*/
 
-function getStatusFromNode(nodeStatus) {  
-  if (s1.stateOfDevice != nodeStatus) {
-    setStatus(nodeStatus);
+function getStatusFromNode(nodeStatus) {
+  //console.log("length of nodeStatus: ", nodeStatus.length);
+  //console.log(typeof(nodeStatus));
+  var status = Number(nodeStatus);
+  //console.log(typeof(status));
+
+  if (s1.stateOfDevice != status) {
+    setStatus(status);
+    //console.log("if nodestatus is not equal to s1: ", s1);
+    return s1.stateOfDevice;
+  } else {
+    //console.log("if nodestatus was equal to s1: ", s1);
+    return s1.stateOfDevice;
   }
-  return s1.stateOfDevice;
 }
 
 function getStatus() {
   return s1.stateOfDevice;
 }
 
+async function insideGet(res) { // I need a better name for this function
+  console.log('before await getDataFromNode()');
+  let response = await getDataFromNode();
+  console.log('after await getDataFromNode');
+  console.log(`response: ${response}`);
+  let data;
+  var stat;
+  if (response == 1) {
+    stat = getStatus();
+    if (stat == 0 || stat == 1) {
+      res.sendStatus(200);
+      data = s1;
+      return data
+    } else if (err) {
+      throw err;
+    }
+  } else {
+    console.log('something went wrong with getDataFromNode');
+  }
+}
+
 function setStatus(update) {
   s1.stateOfDevice = update;
 }
 
-function getDataFromNode(state) {
+async function getDataFromNode() {
   const postData = JSON.stringify({
     'msg': 'Hello World'
   });
@@ -152,7 +197,7 @@ function getDataFromNode(state) {
   var options ={
     host: '192.168.4.1',
     port: 80,
-    path: `/${state}`,
+    path: '/status',
     method: 'POST',
     headers: {
         'Content-Type': 'text/html',
@@ -161,15 +206,19 @@ function getDataFromNode(state) {
   };
 
   var html = '';
-  var req = http.request(options, function (res) {
+  var req = await http.request(options, function (res) {
     console.log(`STATUS: ${res.statusCode}`);
     console.log(`HEADERS" ${JSON.stringify(res.headers)}`);
     res.setEncoding('utf-8');
     res.on('data', (chunk) => {
-        html += chunk;
-        const root = parse(html);
-        const row = root.querySelector(STATUS_QUERY_SELECTOR).firstChild; 
-        getStatusFromNode(row.rawText); // <-- this contains the status received from the node
+      html += chunk;
+      const root = parse(html);
+      const row = root.querySelector(STATUS_QUERY_SELECTOR).firstChild; 
+      //console.log('inside getDataFromNode func: ');
+      //console.log(row.rawText);
+      getStatusFromNode(row.rawText); // <-- this contains the status received from the node
+      //console.log('The data was written to s1.statistics');
+      //console.log(getStatus());
     });
     res.on('end', () => {
       console.log('No more data in response');
@@ -178,9 +227,10 @@ function getDataFromNode(state) {
   req.on('error', (error) => {
     console.log(`Problem with request: ${error}`);
   })
-  req.write(postData);
+    //req.write(postData);
   req.end();
-}
+  return 1;
+  }
 
 ////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////// Multi threading methods ///////////////////////////////////////
@@ -191,7 +241,7 @@ function updateDB(res, amountToBeDeducted) {
   });
   worker.on('message', (data) => {
     res.status(200);
-    console.log(data);
+    //console.log(data);
   });
   worker.on('error', (msg) => {
     res.status(404);
@@ -205,7 +255,7 @@ function ledWorkerFunctions(state, res) {
   });
   worker.on('message', (data) => {
     res.status(200);
-    console.log(data);
+    //console.log(data);
   });
   worker.on('error', (msg) => {
     res.status(404);

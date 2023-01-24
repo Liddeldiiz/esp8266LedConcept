@@ -8,10 +8,12 @@
 ## Server:
 + [x] Read the correct value from the client-side on localhost
 + [x] change requested status in DB
++ [x] Add multithreading functionality
 + [ ] Read the correct value from the esp8266 device
 + [x] Write the correct value to the esp8266 device
 + [ ] Deploy the nodeJS application to Heroku
 + [ ] Figure out how to safely host the service in the internet (needed in order to connect the server with nodeJS and the phone application)
++ [ ] Add function that lets you choose any amount of time frame to query
 
 ## ESP8266:
 + [x] Change the state of the LED on button input
@@ -19,6 +21,7 @@
 + [x] Change the state of the LED on HTTP request
 + [x] Connect the device to the WiFi
 + [x] Connect the device to the Server
++ [ ] check out other protocols like [MQTT, ThingSpeak, ThingsBoard]
 
 ## PHONE APPLICATION:
 + [ ] Prepare the functions correlating to: turnOn, turnOff, and getState
