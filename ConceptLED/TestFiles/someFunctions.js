@@ -22,3 +22,15 @@ function* simpleGenerator() {
 
  /*const generatorObject = simpleGenerator();
     console.log(generatorObject.next());*/
+
+
+
+
+// could be useful for logging information to log file:
+
+/*console.log('Data from esp fetched');
+        console.log(req.path);
+        console.log(req.method);
+        console.log(req.hostname);
+        console.log('data: ');*/
+        /*console.log(data);*/

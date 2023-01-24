@@ -14,6 +14,7 @@ const bodyParser = require('body-parser');
 const s1 = statistics;
 const http = require('http');
 const { parse } = require('node-html-parser');
+const { Worker } = require('worker_threads');
 //const { convert } = require('html-to-exit');
 //const { response } = require('express');
 
@@ -59,27 +60,29 @@ async function startApp(uri) {
   //checkConnectionToNode();
 /* code identifies from which button the POST method is sent and it updates the database according to these values */
 
-  app.post("/turnOn", (req, res) => {
+  app.post("/turnOn", async (req, res) => {
     if(getStatus() == 1) {
       res.send(console.log('LED is already ON!'));
       return console.log('LED is already ON!');
     } else {
       console.log('turn On');
       setStatus(1);
-      ledFunc('led/1');
-      updateDB();
+      // this tasks gets its own thread
+      await ledWorkerFunctions("led/1", res);
+      await updateDB(res, 0);
     }
   });
 
-  app.post("/turnOff", (req, res) => {
+  app.post("/turnOff", async (req, res) => {
     if(getStatus() == 0) {
       res.send(console.log('LED is already OFF!'));
       return console.log('LED is already OFF!');
     } else {
       console.log('turn off');
       setStatus(0);
-      ledFunc('led/0');
-      updateDB();
+      // this tasks gets its own thread
+      await ledWorkerFunctions("led/0", res);
+      await updateDB(res, 0);
     }
   });
 
@@ -141,53 +144,6 @@ function setStatus(update) {
   s1.stateOfDevice = update;
 }
 
-function ledFunc(state) {
-  let url = 'http://192.168.4.1/' + state; // this needs to change, in order to automate this function for n devices, not just one device
-  
-  let data = '';
-  http.get(url, (response) => {
-    response.on('data', (chunk) => {
-      data += chunk;
-    });
-
-    response.on('end', () => {
-      console.log(data);
-    });
-  })
-  .on('error', (error) => {
-    console.log(error);
-  });
-}
-
-function setQueryTime(amountToBeDeducted) {
-  const date = new Date();
-
-  let minute = date.getMinutes();
-  let hourOne = date.getHours() - amountToBeDeducted;
-  let day = date.getDate();
-  let month = date.getMonth() + 1;
-  let year = date.getFullYear();
-
-  let queryDate = `${year}-${month}-${day}T${hourOne}:${minute}:00.000Z`;
-
-  return queryDate;
-}
-
-function updateDB() {
-  MongoClient.connect(uri, function(err, db) {
-    if (err) throw err;
-
-    let insertDate = setQueryTime();
-    var dbo = db.db("LED");
-    var myobj = {name: "switchTime", time: insertDate, state: getStatus()/*state signal from clicked button*/};
-    dbo.collection("SwitchLed").insertOne(myobj, function(err, res) {
-      if (err) throw err;
-      console.log("1 document updated")
-      db.close()
-    })
-  });
-}
-
 function getDataFromNode(state) {
   const postData = JSON.stringify({
     'msg': 'Hello World'
@@ -225,6 +181,40 @@ function getDataFromNode(state) {
   req.write(postData);
   req.end();
 }
+
+////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////// Multi threading methods ///////////////////////////////////////
+
+function updateDB(res, amountToBeDeducted) {
+  const worker = new Worker("./worker-update-db.js", {
+    workerData: {status: getStatus(), url: uri, amount: amountToBeDeducted}
+  });
+  worker.on('message', (data) => {
+    res.status(200);
+    console.log(data);
+  });
+  worker.on('error', (msg) => {
+    res.status(404);
+    console.log(`An error has occured in worker-update-db.js: ${msg}`);
+  });
+}
+
+function ledWorkerFunctions(state, res) {
+  const worker = new Worker("./worker-switch-state.js", {
+    workerData: state
+  });
+  worker.on('message', (data) => {
+    res.status(200);
+    console.log(data);
+  });
+  worker.on('error', (msg) => {
+    res.status(404);
+    console.log(`An error has occured in worker-switch-state.js: ${msg}`);
+  });
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////// Casting main function ///////////////////////////////////////////
 
 main().catch(console.error);
 

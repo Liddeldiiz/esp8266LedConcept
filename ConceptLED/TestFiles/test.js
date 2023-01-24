@@ -5,9 +5,16 @@ const bodyParser = require('body-parser');
 const http = require('http');
 const himalaya = require('himalaya');
 const { parse } = require('node-html-parser');
+const { Worker } = require('worker_threads');
 
 const STATUS_QUERY_SELECTOR = '.status'; //.firstChild 
 var status;
+
+const statistics = {
+    stateOfDevice:0
+};
+
+const s1 = statistics;
 
 //const request = require('request');
 
@@ -25,22 +32,26 @@ async function main() {
 
     app.use((req, res, next) => {
         console.log('Fetching data from esp');
-
-        //data = ledFunc('status');
-        /*console.log('Data from esp fetched');
-        console.log(req.path);
-        console.log(req.method);
-        console.log(req.hostname);
-        console.log('data: ');*/
-        /*console.log(data);*/
+        
         next();
     });
 
-    app.get('/', (req, res) => {
-        res.sendFile(__dirname + '/TestPublic/testIndex.html')
+    app.get('/', async (req, res) => {
+        //res.sendFile(__dirname + '/TestPublic/testIndex.html')
         console.log('first app.get');
-        getDataFromNode('/status');
-
+        //console.log('Before checking status on node: ');
+        //console.log(s1.stateOfDevice);
+        const worker = new Worker("./testWorker.js");
+        worker.on("message", (data) => {
+            res.status(200);
+            console.log(`result of worker: ${data}`);
+        });
+        worker.on("error", (msg) => {
+            res.status(404).send(`An error has occured: ${msg}`);
+        });
+        //getDataFromNode('/status');
+        //console.log('after checking status on node: ');
+        //console.log(`result of getDatatFromNode func: ${getStatus()}`);
 
         /*console.log('sending Html file');*/
     });
@@ -65,9 +76,20 @@ async function ledFunc(state) {
     return data;
 }; // https://www.w3schools.com/js/js_async.asp
 
-function getStatus(nodeStatus) {
-    status = nodeStatus;
-    console.log(status);
+function getStatus() {
+    return s1.stateOfDevice;
+}
+
+
+function getStatusFromNode(nodeStatus) {  
+    if (s1.stateOfDevice != nodeStatus) {
+      setStatus(nodeStatus);
+    }
+    return s1.stateOfDevice;
+}
+
+function setStatus(update) {
+    s1.stateOfDevice = update;
 }
 
 function getDataFromNode(state) {
@@ -100,7 +122,7 @@ function getDataFromNode(state) {
             
             //console.log(typeof row.rawText); //  <-- row.rawText gives me the desired number, but I cannot pass it to the rest of the application
 
-            getStatus(row.rawText);
+            getStatusFromNode(row.rawText);
 
             //console.log(row.rawText);
         });
@@ -116,7 +138,7 @@ function getDataFromNode(state) {
     req.end();
     //console.log('Displaying data: ');
     //console.log(status);
-};
+}; // no idea why, but I need to make the request twice in order to get correct data, the first request retrieves old status
 
   
 
