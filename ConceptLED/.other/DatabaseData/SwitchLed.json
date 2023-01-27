@@ -1,0 +1,121 @@
+[
+{
+  "_id": "ObjectId('63c9933c538f2026654fa86f')",
+  "name": "switchTime",
+  "time": "2023-1-19T20:0:00.000Z",
+  "state": 1
+},
+{
+  "_id": "ObjectId('63c9936d538f2026654fa870')",
+  "name": "switchTime",
+  "time": "2023-1-19T20:1:00.000Z",
+  "state": 0
+},
+{
+  "_id": "ObjectId('63c993bd538f2026654fa871')",
+  "name": "switchTime",
+  "time": "2023-1-19T20:2:00.000Z",
+  "state": 1
+},
+{
+  "_id": "ObjectId('63c993e7538f2026654fa872')",
+  "name": "switchTime",
+  "time": "2023-1-19T20:3:00.000Z",
+  "state": 0
+},
+{
+  "_id": "ObjectId('63c9944d538f2026654fa873')",
+  "name": "switchTime",
+  "time": "2023-1-19T20:4:00.000Z",
+  "state": 1
+},
+{
+  "_id": "ObjectId('63c99997055fa85a6abc79d7')",
+  "name": "switchTime",
+  "time": "2023-1-19T20:27:00.000Z",
+  "state": 0
+},
+{
+  "_id": "ObjectId('63c99a61b30e38889547ae22')",
+  "name": "switchTime",
+  "time": "2023-1-19T20:30:00.000Z",
+  "state": 1
+},
+{
+  "_id": "ObjectId('63c99b8b72862e4cb00dc552')",
+  "name": "switchTime",
+  "time": "2023-1-19T20:35:00.000Z",
+  "state": 1
+},
+{
+  "_id": "ObjectId('63c99ba572862e4cb00dc553')",
+  "name": "switchTime",
+  "time": "2023-1-19T20:36:00.000Z",
+  "state": 0
+},
+{
+  "_id": "ObjectId('63c99ba672862e4cb00dc554')",
+  "name": "switchTime",
+  "time": "2023-1-19T20:36:00.000Z",
+  "state": 1
+},
+{
+  "_id": "ObjectId('63c99bfd72862e4cb00dc555')",
+  "name": "switchTime",
+  "time": "2023-1-19T20:37:00.000Z",
+  "state": 0
+},
+{
+  "_id": "ObjectId('63c99bfe72862e4cb00dc556')",
+  "name": "switchTime",
+  "time": "2023-1-19T20:37:00.000Z",
+  "state": 1
+},
+{
+  "_id": "ObjectId('63c99c0572862e4cb00dc557')",
+  "name": "switchTime",
+  "time": "2023-1-19T20:37:00.000Z",
+  "state": 0
+},
+{
+  "_id": "ObjectId('63c99c3fcc71d6871f647b4f')",
+  "name": "switchTime",
+  "time": "2023-1-19T20:38:00.000Z",
+  "state": 1
+},
+{
+  "_id": "ObjectId('63c99c96a74c957c9d965e88')",
+  "name": "switchTime",
+  "time": "2023-1-19T20:40:00.000Z",
+  "state": 1
+},
+{
+  "_id": "ObjectId('63c99c9aa74c957c9d965e89')",
+  "name": "switchTime",
+  "time": "2023-1-19T20:40:00.000Z",
+  "state": 0
+},
+{
+  "_id": "ObjectId('63c99f70f44700518bff941c')",
+  "name": "switchTime",
+  "time": "2023-1-19T20:52:00.000Z",
+  "state": 0
+},
+{
+  "_id": "ObjectId('63c99f7af44700518bff941d')",
+  "name": "switchTime",
+  "time": "2023-1-19T20:52:00.000Z",
+  "state": 1
+},
+{
+  "_id": "ObjectId('63c99f7cf44700518bff941e')",
+  "name": "switchTime",
+  "time": "2023-1-19T20:52:00.000Z",
+  "state": 0
+},
+{
+  "_id": "ObjectId('63c9a0fa612d2502c826c398')",
+  "name": "switchTime",
+  "time": "2023-1-19T20:58:00.000Z",
+  "state": 1
+}]
