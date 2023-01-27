@@ -1,58 +1,13 @@
-// Check out: https://axios-http.com/docs/intro
-
-/* the state of the led will be stored inside an object. Once there will be more devices this can be helpful */
-
-/* I will not use this anymore, in order to keep and check the current status of node I will check onboard status and in db
-const statistics = {
-  stateOfDevice:0
-}
-
-//const s1 = statistics;
-//const http = require('http');
-//const { parse } = require('node-html-parser');
-//const { convert } = require('html-to-exit');
-//const { response } = require('express');
-//const MongoClient = require('mongodb').MongoClient;
-
-due to statistics object not being used anymore, functions are depricated
-
-function getStatus() {
-  return s1.stateOfDevice;
-}
-
-function setStatus(update) {
-  s1.stateOfDevice = update;
-}
-
-  !!! the function is used and modified in EspApi.js, if test will be successful, it can be removed here !!!
-
-function getStatusFromNode(nodeStatus) {
-  //console.log("length of nodeStatus: ", nodeStatus.length);
-  //console.log(typeof(nodeStatus));
-  var status = Number(nodeStatus);
-  //console.log(typeof(status));
-
-  if (s1.stateOfDevice != status) {
-    setStatus(status);
-    //console.log("if nodestatus is not equal to s1: ", s1);
-    return s1.stateOfDevice;
-  } else {
-    //console.log("if nodestatus was equal to s1: ", s1);
-    return s1.stateOfDevice;
-  }
-}
-
-*/
-
 console.log('Server-side code running');
 
+//import { express } from 'express';
 const express = require('express');
 const app = express();
 const mongoose = require('mongoose');
 const dotenv = require('dotenv');
 dotenv.config();
 
-const bodyParser = require('body-parser');
+//const bodyParser = require('body-parser');
 
 //MongoDB connection
 
@@ -67,7 +22,7 @@ const database = process.env.MONGOLAB_URI;
   //const uri = "mongodb://localhost:27017/test?retryWrites=true&w=majority";
   //const uri = "mongodb://localhost:27017";
   //const client = await new MongoClient(uri);
-  
+console.log('trying to connect do db ...'); 
 mongoose
   .connect(database, {useUnifiedTopology: true, useNewUrlParser: true})
   .then(() => console.log('MongoDB connected'))
@@ -219,3 +174,48 @@ async function insideGet(res) { // I need a better name for this function
 //              in order to activate the scripts on board of the ESP8266 module
 
 
+// Check out: https://axios-http.com/docs/intro
+
+/* the state of the led will be stored inside an object. Once there will be more devices this can be helpful */
+
+/* I will not use this anymore, in order to keep and check the current status of node I will check onboard status and in db
+const statistics = {
+  stateOfDevice:0
+}
+
+//const s1 = statistics;
+//const http = require('http');
+//const { parse } = require('node-html-parser');
+//const { convert } = require('html-to-exit');
+//const { response } = require('express');
+//const MongoClient = require('mongodb').MongoClient;
+
+due to statistics object not being used anymore, functions are depricated
+
+function getStatus() {
+  return s1.stateOfDevice;
+}
+
+function setStatus(update) {
+  s1.stateOfDevice = update;
+}
+
+  !!! the function is used and modified in EspApi.js, if test will be successful, it can be removed here !!!
+
+function getStatusFromNode(nodeStatus) {
+  //console.log("length of nodeStatus: ", nodeStatus.length);
+  //console.log(typeof(nodeStatus));
+  var status = Number(nodeStatus);
+  //console.log(typeof(status));
+
+  if (s1.stateOfDevice != status) {
+    setStatus(status);
+    //console.log("if nodestatus is not equal to s1: ", s1);
+    return s1.stateOfDevice;
+  } else {
+    //console.log("if nodestatus was equal to s1: ", s1);
+    return s1.stateOfDevice;
+  }
+}
+
+*/

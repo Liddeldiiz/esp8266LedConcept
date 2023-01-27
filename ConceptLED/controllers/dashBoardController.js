@@ -1,4 +1,3 @@
-const Led = require('../models/Led');
 const bcrypt = require('bcryptjs');
 const {
     ledSwitchStateRequest, 

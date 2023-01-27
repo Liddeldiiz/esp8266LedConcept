@@ -1,4 +1,4 @@
-const express = require('exrpess');
+//import { express } from 'express';
 
 const { 
     dashBoardView, 
@@ -6,7 +6,10 @@ const {
     turnLedOff 
 } = require('../controllers/dashBoardController.js');
 
+const express = require('express');
 const router = express.Router();
+
+router.get('/', dashBoardView);
 
 router.get('/turnOn', dashBoardView);
 router.get('/turnOff', dashBoardView);
